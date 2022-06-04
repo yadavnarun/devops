@@ -1,5 +1,5 @@
 # --------------> The build image
-FROM node:latest AS build
+FROM node:lts-alpine AS build
 WORKDIR /usr/src/app
 COPY package*.json /usr/src/app/
 RUN npm ci

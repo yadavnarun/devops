@@ -1,17 +1,14 @@
 services:
-  db:
-    image: mariadb
+  database:
+    image: mariadb:10
     container_name: mariadbcontainer
     restart: unless-stopped
+    volumes:
+      - ./mariadb:/var/lib/mysql
     ports:
       - 3306:3306
-    expose:
-      - 3306
-    environment:
-      MARIADB_DATABASE: actionsdb
-      MARIADB_USER: admin
-      MARIADB_PASSWORD: pass
-      MARIADB_ROOT_PASSWORD: pass
+    env_file:
+      - .db.env
     networks:
       - actionsNetwork
 
@@ -23,10 +20,13 @@ services:
     expose:
       - 3000
     environment:
-      DB_HOST: db
+      - DB_USERNAME=admin
+      - DB_PASSWORD=pass
+      - DB_NAME=actions
+      - DB_HOST=database
     restart: always
     depends_on:
-      - db
+      - database
     networks:
       - actionsNetwork
 
