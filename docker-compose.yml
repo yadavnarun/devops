@@ -1,0 +1,35 @@
+services:
+  db:
+    image: mariadb
+    container_name: mariadbcontainer
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    environment:
+      MARIADB_DATABASE: actionsdb
+      MARIADB_USER: admin
+      MARIADB_PASSWORD: pass
+      MARIADB_ROOT_PASSWORD: pass
+    networks:
+      - actionsNetwork
+
+  server:
+    container_name: actionscontainer
+    image: actions-server
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    environment:
+      DB_HOST: db
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - actionsNetwork
+
+networks:
+  actionsNetwork:
+    driver: bridge

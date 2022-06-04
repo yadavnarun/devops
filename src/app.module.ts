@@ -8,10 +8,14 @@ import { Action } from './action/entities/action.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'actions.sql',
+      type: 'mariadb',
+      host: process.env.DB_HOST,
+      port: 3306,
+      username: 'admin',
+      password: 'pass',
+      database: 'actionsdb',
       entities: [Action],
-      // synchronize: process.env.NODE_ENV === 'development' ? true : false,
+      // synchronize: process.env.NODE_ENV === 'production' ? false : true,
       synchronize: true,
     }),
     ActionModule,
