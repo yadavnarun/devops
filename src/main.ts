@@ -6,12 +6,13 @@ import {
   SwaggerDocumentOptions,
   SwaggerCustomOptions,
 } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(helmet());
 
   // swagger setup
-
   const config = new DocumentBuilder()
     .setTitle('devops example')
     .setDescription('CURD API docs')
@@ -32,5 +33,4 @@ async function bootstrap() {
 
   await app.listen(3000);
 }
-
 bootstrap();

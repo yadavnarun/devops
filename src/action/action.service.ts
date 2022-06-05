@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  CACHE_MANAGER,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -9,18 +11,21 @@ import { Repository } from 'typeorm';
 import { CreateActionDto } from './dto/create-action.dto';
 import { UpdateActionDto } from './dto/update-action.dto';
 import { Action } from './entities/action.entity';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ActionService {
   constructor(
     @InjectRepository(Action)
     private actionRepository: Repository<Action>,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async create(createActionDto: CreateActionDto) {
     return await this.actionRepository
       .save(createActionDto)
-      .then((res) => {
+      .then(async (res) => {
+        await this.cacheManager.del('actions');
         return res;
       })
       .catch((err) => {
@@ -32,9 +37,13 @@ export class ActionService {
   }
 
   async findAll() {
+    const cache = await this.cacheManager.get('actions');
+    if (cache !== null) return cache;
+
     return await this.actionRepository
       .find()
-      .then((res) => {
+      .then(async (res) => {
+        await this.cacheManager.set('actions', res);
         return res;
       })
       .catch((err) => {
@@ -63,9 +72,11 @@ export class ActionService {
   async update(id: number, updateActionDto: UpdateActionDto) {
     return await this.actionRepository
       .update(id, updateActionDto)
-      .then((res) => {
-        if (res.affected === 1) return res;
-        else throw new Error('bad');
+      .then(async (res) => {
+        if (res.affected === 1) {
+          await this.cacheManager.del('actions');
+          return res;
+        } else throw new Error('bad');
       })
       .catch((err) => {
         if (err.message === 'bad')
@@ -80,9 +91,11 @@ export class ActionService {
   async remove(id: number) {
     return await this.actionRepository
       .delete(id)
-      .then((res) => {
-        if (res.affected === 1) return res;
-        else throw new Error('bad');
+      .then(async (res) => {
+        if (res.affected === 1) {
+          await this.cacheManager.del('actions');
+          return res;
+        } else throw new Error('bad');
       })
       .catch((err) => {
         if (err.message === 'bad')
