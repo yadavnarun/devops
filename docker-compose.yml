@@ -12,8 +12,8 @@ services:
     networks:
       - actionsNetwork
 
-  cachedb:
-    image: redis:7
+  redis:
+    image: redis:7-alpine
     container_name: rediscontainer
     restart: unless-stopped
     ports:
@@ -24,16 +24,16 @@ services:
   server:
     container_name: actionscontainer
     image: actions-server
+    restart: always
     ports:
       - 3000:3000
     expose:
       - 3000
     environment:
       DB_HOST: database
-      REDIS_HOST: cachedb
+      REDIS_HOST: redis
     env_file:
       - .env
-    restart: always
     depends_on:
       - database
       - redis
