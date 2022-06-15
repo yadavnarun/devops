@@ -19,7 +19,11 @@ describe('AppController (e2e)', () => {
   //   await app.close();
   // });
 
-  it('/ (GET)', () => {
+  it('Passing test', () => {
     expect(true).toBe(true);
+  });
+
+  it('Failing test', () => {
+    expect(false).toBe(true);
   });
 });
