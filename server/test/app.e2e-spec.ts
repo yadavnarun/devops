@@ -23,7 +23,7 @@ describe('AppController (e2e)', () => {
     expect(true).toBe(true);
   });
 
-  it('Failing test', () => {
-    expect(false).toBe(true);
-  });
+  // it('Failing test', () => {
+  //   expect(false).toBe(true);
+  // });
 });
